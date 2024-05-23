@@ -45,26 +45,20 @@ if (isset($_GET['id'])) {
         <link rel="stylesheet" href="putaincestchiantla.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
-
     <body>
-        <?php
-        include "header.php";
-        ?>
-
-        <?php
-        include "aside.php";
-        ?>
+        <?php include "header.php"; ?>
+        <?php include "aside.php"; ?>
         <div class="container">
             <?php if (isset($profile_user)) : ?>
                 <?php if ($is_own_profile) : ?>
                 <a href="profilEdit.php?id=<?php echo $_SESSION['user_id']; ?>">
-                    <button type="button" class="profil-edit-button">
+                    <button type="button" id="profil-edit-button">
                         <i class="fa fa-edit" style="font-size: 36px"></i>
                     </button>
                 </a>
             <?php else : ?>
-                <button type="button" class="profil-edit-button" id="profil-follow-button">
-                    <i class="fa fa-user-plus"></i>
+                <button type="button" id="profil-follow-button">
+                    <i class="fa fa-user-plus" style="font-size: 36px"></i>
                 </button>
                 <script>
                     document.getElementById('profil-follow-button').addEventListener('click', function() {
@@ -77,14 +71,16 @@ if (isset($_GET['id'])) {
                 <div class="profil-img">
                     <img src="<?php echo getPPUser($profile_user_id); ?>" alt="Photo de profil">
                 </div>
-                <h1>@<?php echo htmlspecialchars($profile_user['pseudo']); ?></h1>
+                <h1 id="profil-name">@<?php echo htmlspecialchars($profile_user['pseudo']); ?></h1>
 
-                <p id="profil-bio">A propos de <?php echo htmlspecialchars($profile_user['pseudo']); ?> <br> <div id="profil_bio"> <?php echo htmlspecialchars($profile_user['bio']); ?> </div></p>
+                <div id="profil-bio">
+                    <p>A propos de <?php echo htmlspecialchars($profile_user['pseudo']); ?> : </p>
+                    <p id="profil-bio-bio"><?php echo nl2br(htmlspecialchars($profile_user['bio'])); ?></p>
+                </div>
                 <p id="profil-followers-count">Abonnés : <?php echo getNbOfFollowingUsers($profile_user_id); ?></p>
             <?php else : ?>
                 <p>Profil non trouvé.</p>
             <?php endif; ?>
         </div>
     </body>
-
 </html>
