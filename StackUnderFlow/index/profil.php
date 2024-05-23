@@ -42,7 +42,7 @@ if (isset($_GET['id'])) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>@<?php echo isset($profile_user) ? htmlspecialchars($profile_user['pseudo']) : 'Profil'; ?> - Profil</title>
-        <link rel="stylesheet" href="encore.css">
+        <link rel="stylesheet" href="putaincestchiantla.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
@@ -58,29 +58,29 @@ if (isset($_GET['id'])) {
             <?php if (isset($profile_user)) : ?>
                 <?php if ($is_own_profile) : ?>
                 <a href="profilEdit.php?id=<?php echo $_SESSION['user_id']; ?>">
-                    <button type="button" class="ButtonProfile">
-                        <i class="fa fa-edit" style="font-size:36px"></i>
+                    <button type="button" class="profil-edit-button">
+                        <i class="fa fa-edit" style="font-size: 36px"></i>
                     </button>
                 </a>
             <?php else : ?>
-                <button type="button" class="ButtonProfile" id="followButton">
+                <button type="button" class="profil-edit-button" id="profil-follow-button">
                     <i class="fa fa-user-plus"></i>
                 </button>
                 <script>
-                    document.getElementById('followButton').addEventListener('click', function() {
+                    document.getElementById('profil-follow-button').addEventListener('click', function() {
                         var currentIconClass = this.querySelector('.fa').classList.contains('fa-user-plus') ? 'fa-user-o' : 'fa-user-plus';
                         this.querySelector('.fa').className = currentIconClass;
                     });
                 </script>
             <?php endif; ?>
 
-                <div class="profile-img">
+                <div class="profil-img">
                     <img src="<?php echo getPPUser($profile_user_id); ?>" alt="Photo de profil">
                 </div>
                 <h1>@<?php echo htmlspecialchars($profile_user['pseudo']); ?></h1>
 
-                <p id="bio">A propos de <?php echo htmlspecialchars($profile_user['pseudo']); ?> <br> <div id="profil_bio"> <?php echo htmlspecialchars($profile_user['bio']); ?> </div></p>
-                <p id="followers-count">Abonnés : <?php echo getNbOfFollowingUsers($profile_user_id); ?></p>
+                <p id="profil-bio">A propos de <?php echo htmlspecialchars($profile_user['pseudo']); ?> <br> <div id="profil_bio"> <?php echo htmlspecialchars($profile_user['bio']); ?> </div></p>
+                <p id="profil-followers-count">Abonnés : <?php echo getNbOfFollowingUsers($profile_user_id); ?></p>
             <?php else : ?>
                 <p>Profil non trouvé.</p>
             <?php endif; ?>
