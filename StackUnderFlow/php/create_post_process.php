@@ -1,33 +1,60 @@
 <?php
 session_start();
 
-if (isset($_POST['post_title'], $_POST['post_theme'], $_SESSION['user_id']) && $_POST['post_title'] != "") {
+if (!isset($_SESSION['user_id'])) {
+    exit("Vous devez être connecté pour créer un post.");
+}
+
+if (isset($_POST['post_title'], $_POST['post_theme'], $_POST['post_message']) && !empty($_POST['post_title'])) {
     try {
-        $bdd = new PDO('mysql:host=localhost;dbname=lbde','root','');
+        $bdd = new PDO('mysql:host=localhost;dbname=stackunderflow', 'root', '');
         $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
-    catch (PDOException $e) {
-        exit("Echec de la connection." . $e->getMessage());
+    } catch (PDOException $e) {
+        exit("Echec de la connexion: " . $e->getMessage());
     }
 
-    $stmt2 = $bdd->prepare("SELECT title FROM posts WHERE posts.author = :author2 AND posts.title= :title2");
-    $stmt2->bindParam(':author2', $_SESSION['user_id']);
-    $stmt2->bindParam(':title2', $_POST['post_title']);
-    $stmt2->execute();
+    $title = $_POST['post_title'];
+    $idTheme = $_POST['post_theme'];
+    $message = $_POST['post_message'];
+    $author = $_SESSION['user_id'];
 
-    if($stmt2->rowCount() > 0) {
+    $stmt = $bdd->prepare("SELECT title FROM posts WHERE author = :author AND title = :title");
+    $stmt->bindParam(':author', $author);
+    $stmt->bindParam(':title', $title);
+    $stmt->execute();
+
+    if ($stmt->rowCount() > 0) {
         echo "Le post existe déjà.";
     } else {
-        $stmt = $bdd->prepare("INSERT INTO posts (title, idTheme, author) VALUES (:title, :idTheme, :author)");
-        $stmt->bindParam(':title', $title);
-        $stmt->bindParam(':idTheme', $idTheme);
-        $stmt->bindParam(':author', $author);
+        try {
+            $stmt = $bdd->prepare("INSERT INTO messages (textMessage, authorMessage, dateMessage) VALUES (:message, :author, NOW())");
+            $stmt->bindParam(':message', $message);
+            $stmt->bindParam(':author', $author);
+            $stmt->execute();
+            $messageId = $bdd->lastInsertId();
 
-        $title = $_POST['post_title'];
-        $idTheme = $_POST['post_theme'];
-        $author = $_SESSION['user_id'];
-        $stmt->execute();
+            $stmt = $bdd->prepare("INSERT INTO posts (title, idTheme, author) VALUES (:title, :idTheme, :author)");
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':idTheme', $idTheme);
+            $stmt->bindParam(':author', $author);
+            $stmt->execute();
+            $postId = $bdd->lastInsertId();
+
+            $stmt = $bdd->prepare("INSERT INTO post_messages (idPost, idMessage) VALUES (:post, :message)");
+            $stmt->bindParam(':post', $postId);
+            $stmt->bindParam(':message', $messageId);
+            $stmt->execute();
+
+            echo "Post créé avec succès.";
+        } catch (PDOException $e) {
+            if ($e->getCode() == '45000') {
+                echo "Erreur: Le message contient des mots interdits.";
+            } else {
+                echo "Erreur lors de la création du post: " . $e->getMessage();
+            }
+        }
     }
 } else {
-    echo "Il n'y a pas de titre !";
+    echo "Veuillez remplir tous les champs.";
 }
+?>

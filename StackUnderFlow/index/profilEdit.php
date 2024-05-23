@@ -49,17 +49,25 @@ if (isset($_GET['id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@<?php echo isset($profile_user) ? htmlspecialchars($profile_user['pseudo']) : 'Profil'; ?> - Profil</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="encore.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
-<?php include "aside.php"; ?>
-<?php include "header.php"; ?>
+<body>
+<?php
+include "header.php";
+?>
+
+<?php
+include "aside.php";
+?>
+
+</body>
 <div class="container">
     <?php if (isset($profile_user)) : ?>
         <?php if ($is_own_profile) : ?>
-            <form action="mangetasoeur.php" method="post" enctype="multipart/form-data">
+            <form action="../php/profil_process.php" method="POST" enctype="multipart/form-data">
                 <div class="profile-img-container">
                     <div class="profile-img">
                         <label for="ppUser">Photo de profil :</label>
@@ -74,6 +82,11 @@ if (isset($_GET['id'])) {
                 <input type="text" name="pseudo" id="pseudo" value="<?php echo htmlspecialchars($profile_user['pseudo']); ?>">
                 <label for="bio">Bio :</label>
                 <textarea name="bio" id="bio"><?php echo htmlspecialchars($profile_user["bio"]); ?></textarea>
+                <select name="status" id="status">
+                    <option value="En ligne" <?php echo $profile_user['statut'] == 'online' ? 'selected' : ''; ?>>En ligne</option>
+                    <option value="Ne pas déranger" <?php echo $profile_user['statut'] == 'dnd' ? 'selected' : ''; ?>>Ne pas déranger</option>
+                    <option value="Invisible" <?php echo $profile_user['statut'] == 'invisible' ? 'selected' : ''; ?>>Invisible</option>
+                </select>
                 <button type="submit" class="ButtonProfile">Mettre à jour</button>
             </form>
         <?php else : ?>
