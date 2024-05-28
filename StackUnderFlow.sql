@@ -113,7 +113,7 @@ INSERT INTO MOTS_INTERDITS (nomMotInterdit) VALUES
 
 
 -- Empêche le post de message contenant des mots interdits
-
+/*
 DROP TRIGGER IF EXISTS moderation_message_trigger;
 DELIMITER $$
 CREATE TRIGGER moderation_message_trigger
@@ -144,7 +144,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+*/
 
 -- suppression en cascade lorsqu'on delete un user
 DROP TRIGGER IF EXISTS cascade_delete_likes_user_trigger;
