@@ -112,39 +112,70 @@ INSERT INTO MOTS_INTERDITS (nomMotInterdit) VALUES
 ('test5');
 
 
--- Empêche le post de message contenant des mots interdits
-/*
+-- Remplace les mots interdits par des étoiles
+
 DROP TRIGGER IF EXISTS moderation_message_trigger;
+
 DELIMITER $$
+
 CREATE TRIGGER moderation_message_trigger
 BEFORE INSERT ON MESSAGES
 FOR EACH ROW
 BEGIN
-    DECLARE word TEXT;
-	
+    DECLARE word VARCHAR(50);
+    DECLARE done INT DEFAULT 0;
+
     DECLARE forbidden_words CURSOR FOR 
         SELECT nomMotInterdit 
-        FROM mots_interdits;
-        
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET @word_found = 1;
+        FROM MOTS_INTERDITS;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
     OPEN forbidden_words;
     check_words: LOOP
         FETCH forbidden_words INTO word;
-        IF @word_found = 1 THEN
+        IF done THEN
             LEAVE check_words;
         END IF;
+        SET NEW.textMessage = REPLACE(NEW.textMessage, word, '****');
     END LOOP check_words;
     CLOSE forbidden_words;
-
-    IF @word_found = 1 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Le message contient des mots interdits';
-    END IF;
 END$$
 
 DELIMITER ;
-*/
+
+
+--suppression cascade lorsqu'on delete un post
+DROP TRIGGER IF EXISTS cascade_delete_post_messages_trigger;
+
+DELIMITER $$
+
+CREATE TRIGGER cascade_delete_post_messages_trigger
+AFTER DELETE ON posts
+FOR EACH ROW
+BEGIN
+    DELETE FROM post_messages WHERE idPost = OLD.idPost;
+    DELETE FROM messages WHERE idMessage IN (SELECT idMessage FROM post_messages WHERE idPost = OLD.idPost);
+END$$
+
+DELIMITER ;
+
+--suppression cascade lorsqu'on delete un message
+DROP TRIGGER IF EXISTS cascade_delete_post_messages_on_delete_message_trigger;
+
+DELIMITER $$
+
+CREATE TRIGGER cascade_delete_post_messages_on_delete_message_trigger
+BEFORE DELETE ON messages
+FOR EACH ROW
+BEGIN
+    DELETE FROM post_messages WHERE post_messages.idMessage = OLD.idMessage;
+END$$
+
+DELIMITER ;
+
+
+
 
 -- suppression en cascade lorsqu'on delete un user
 DROP TRIGGER IF EXISTS cascade_delete_likes_user_trigger;
