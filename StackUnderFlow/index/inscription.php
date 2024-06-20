@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StackUnderFlow</title>
     <link rel="icon" type="image/vnd.icon" href="icon.png">
-    <link rel="stylesheet" href="putaincestchiantla.css">
+    <link rel="stylesheet" href="qsdfqsdf.css">
 </head>
 <body>
     <?php

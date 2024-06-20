@@ -6,7 +6,7 @@
             </div>
 
             <div class="aside-nav-ul-div" onclick="toggleList(this)">
-                <a href="#"><h3>Thème le plus populaire</h3></a>
+                <a href="theme_pop.php"><h3>Thème le plus populaire</h3></a>
             </div>
 
             <div class="aside-nav-ul-div" onclick="toggleList(this)">

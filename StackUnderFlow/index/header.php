@@ -16,9 +16,7 @@
     <div id="header-right">
         <?php
         if(isset($_SESSION["user_id"])) {
-            echo "<button onclick='MyNotif()'>
-             <img src='notifbell.png' alt='notifbell' id='header-right-bell'>
-             </button>
+            echo "
              <div id='header-left-deconnexion'>
              <a href='../php/deconnexion_process.php'>Déconnexion</a>
              </div>";

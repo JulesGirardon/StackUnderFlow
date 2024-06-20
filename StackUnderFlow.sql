@@ -36,6 +36,7 @@ CREATE TABLE POSTS (
     title VARCHAR(255),
     idTheme INT,
     author INT,
+    imagePath VARCHAR(255) NULL,
     CONSTRAINT Pk_posts PRIMARY KEY (idPost),
     CONSTRAINT Fk_posts_author FOREIGN KEY (author) REFERENCES USERS(idUser),
     CONSTRAINT Fk_posts_theme FOREIGN KEY (idTheme) REFERENCES THEMES(idTheme)
@@ -60,7 +61,7 @@ CREATE TABLE FOLLOWS (
 CREATE TABLE MESSAGES (
     idMessage INT AUTO_INCREMENT,
     textMessage VARCHAR(255),
-    photoMessage VARCHAR(255),
+    imagePath VARCHAR(255) NULL,
     SondageMessage BOOLEAN,
     repostMessage BOOLEAN,
     authorMessage INT,
@@ -77,8 +78,9 @@ CREATE TABLE POST_MESSAGES (
     CONSTRAINT Fk_post_messages_message FOREIGN KEY (idMessage) REFERENCES MESSAGES(idMessage)
 );
 
+DROP FUNCTION IF EXISTS GetLikeForPost;
 DELIMITER $$
-CREATE OR REPLACE FUNCTION GetLikeForPost(IdPost INT)
+CREATE FUNCTION GetLikeForPost(IdPost INT)
 RETURNS INT
 BEGIN
     DECLARE nbLike INT;
@@ -101,8 +103,6 @@ BEGIN
     RETURN nbFollows;
 END $$
 DELIMITER ;
-
--- SQL de Eudes
 
 INSERT INTO MOTS_INTERDITS (nomMotInterdit) VALUES
 ('test1'),
@@ -145,7 +145,7 @@ END$$
 DELIMITER ;
 
 
---suppression cascade lorsqu'on delete un post
+#suppression cascade lorsqu'on delete un post
 DROP TRIGGER IF EXISTS cascade_delete_post_messages_trigger;
 
 DELIMITER $$
@@ -160,7 +160,7 @@ END$$
 
 DELIMITER ;
 
---suppression cascade lorsqu'on delete un message
+-- suppression cascade lorsqu'on delete un message
 DROP TRIGGER IF EXISTS cascade_delete_post_messages_on_delete_message_trigger;
 
 DELIMITER $$
@@ -189,9 +189,9 @@ END$$
 
 DELIMITER ;
 
+DROP TRIGGER IF EXISTS cascade_delete_likes_message_trigger;
 DELIMITER $$
-
-CREATE OR REPLACE TRIGGER cascade_delete_likes_message_trigger
+CREATE TRIGGER cascade_delete_likes_message_trigger
 AFTER DELETE ON MESSAGES
 FOR EACH ROW
 BEGIN
@@ -263,4 +263,3 @@ BEGIN
 END;
 
 DELIMITER ;
--- fin SQL de Eudes

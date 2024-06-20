@@ -25,11 +25,29 @@ if (isset($_GET['id'])) {
             $profile_user = null;
         }
 
+        if (!$is_own_profile){
+            $stmt = $conn->prepare("SELECT COUNT(*) FROM FOLLOWS WHERE idUser1 = :idUser1 AND idUser2 = :idUser2");
+            $stmt->bindParam(':idUser1', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':idUser2', $profile_user_id, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+            $count = $stmt->fetchColumn();
+
+            if ($count > 0){
+                $is_followed = False;
+            } else {
+                $is_followed = True;
+            }
+
+        }
+
+
     } catch (PDOException $e) {
         die("Échec de la connexion à la base de données : " . $e->getMessage());
     }
 
-    $conn = null; // close the connection
+    $conn = null;
 } else {
     echo "ID utilisateur non spécifié dans l'URL.";
     $profile_user = null;
@@ -38,49 +56,55 @@ if (isset($_GET['id'])) {
 
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>@<?php echo isset($profile_user) ? htmlspecialchars($profile_user['pseudo']) : 'Profil'; ?> - Profil</title>
-        <link rel="stylesheet" href="putaincestchiantla.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    </head>
-    <body>
-        <?php include "header.php"; ?>
-        <?php include "aside.php"; ?>
-        <div class="container">
-            <?php if (isset($profile_user)) : ?>
-                <?php if ($is_own_profile) : ?>
-                <a href="profilEdit.php?id=<?php echo $_SESSION['user_id']; ?>">
-                    <button type="button" id="profil-edit-button">
-                        <i class="fa fa-edit" style="font-size: 36px"></i>
-                    </button>
-                </a>
-            <?php else : ?>
-                <button type="button" id="profil-follow-button">
-                    <i class="fa fa-user-plus" style="font-size: 36px"></i>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@<?php echo isset($profile_user) ? htmlspecialchars($profile_user['pseudo']) : 'Profil'; ?> - Profil</title>
+    <link rel="stylesheet" href="qsdfqsdf.css">
+    <script src="https://kit.fontawesome.com/5dfd5dfa22.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<?php include "header.php"; ?>
+<?php include "aside.php"; ?>
+<div class="container">
+    <?php if (isset($profile_user)) : ?>
+        <?php if ($is_own_profile) : ?>
+            <a href="profilEdit.php?id=<?php echo $_SESSION['user_id']; ?>">
+                <button type="button" id="profil-edit-button">
+                    <i class="fa fa-edit" style="font-size: 36px"></i>
                 </button>
-                <script>
-                    document.getElementById('profil-follow-button').addEventListener('click', function() {
-                        var currentIconClass = this.querySelector('.fa').classList.contains('fa-user-plus') ? 'fa-user-o' : 'fa-user-plus';
-                        this.querySelector('.fa').className = currentIconClass;
-                    });
-                </script>
+            </a>
+        <?php else : ?>
+            <?php if (!$is_followed): ?>
+                <form action="../php/removeFolower_process.php" method="post">
+                    <input type="hidden" name="profile_user_id" value="<?php echo $profile_user_id; ?>">
+                    <button type="submit" id="profil-follow-button">
+                        <i class="fa fa-user-minus" style="font-size: 36px"></i>
+                    </button>
+                </form>
+            <?php else: ?>
+                <form action="../php/addFolower_process.php" method="post">
+                    <input type="hidden" name="profile_user_id" value="<?php echo $profile_user_id; ?>">
+                    <button type="submit" id="profil-follow-button">
+                        <i class="fa fa-user-plus" style="font-size: 36px"></i>
+                    </button>
+                </form>
             <?php endif; ?>
+        <?php endif; ?>
 
-                <div class="profil-img">
-                    <img src="<?php echo getPPUser($profile_user_id); ?>" alt="Photo de profil">
-                </div>
-                <h1 id="profil-name">@<?php echo htmlspecialchars($profile_user['pseudo']); ?></h1>
-
-                <div id="profil-bio">
-                    <p>A propos de <?php echo htmlspecialchars($profile_user['pseudo']); ?> : </p>
-                    <p id="profil-bio-bio"><?php echo nl2br(htmlspecialchars($profile_user['bio'])); ?></p>
-                </div>
-                <p id="profil-followers-count">Abonnés : <?php echo getNbOfFollowingUsers($profile_user_id); ?></p>
-            <?php else : ?>
-                <p>Profil non trouvé.</p>
-            <?php endif; ?>
+        <div class="profil-img">
+            <img src="<?php echo getPPUser($profile_user_id); ?>" alt="Photo de profil">
         </div>
-    </body>
+        <h1 id="profil-name">@<?php echo htmlspecialchars($profile_user['pseudo']); ?></h1>
+
+        <div id="profil-bio">
+            <p>A propos de <?php echo htmlspecialchars($profile_user['pseudo']); ?> : </p>
+            <p id="profil-bio-bio"><?php echo nl2br(htmlspecialchars($profile_user['bio'])); ?></p>
+        </div>
+        <p id="profil-followers-count">Abonnés : <?php echo getNbOfFollowingUsers($profile_user_id); ?></p>
+    <?php else : ?>
+        <p>Profil non trouvé.</p>
+    <?php endif; ?>
+</div>
+</body>
 </html>
