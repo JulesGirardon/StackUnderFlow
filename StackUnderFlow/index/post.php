@@ -45,6 +45,12 @@ if(isset($_GET['id'])) {
         $stmt->execute();
         $liste_message = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $stmt = $conn->prepare("SELECT idMessage FROM likes WHERE idUser = :userId");
+        $stmt->bindParam(':userId', $_SESSION['user_id'], PDO::PARAM_INT); 
+        $stmt->execute();
+        $likes = $stmt->fetchAll(PDO::FETCH_COLUMN, 0); 
+
+
     } catch (PDOException $e) {
         die("Échec de la connexion à la base de données : " . $e->getMessage());
     }
@@ -61,6 +67,7 @@ if(isset($_GET['id'])) {
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Post</title>
         <link rel="stylesheet" type="text/css" href="qsdfqsdf.css">
+        <script src="https://kit.fontawesome.com/5dfd5dfa22.js" crossorigin="anonymous"></script>
     </head>
 <body>
 <?php include "header.php"; ?>
@@ -85,42 +92,64 @@ if(isset($_GET['id'])) {
     <h2 class="main-post-section">Réponses</h2>
 
     <div id="liste-message-post">
-        <?php
-        if(!empty($liste_message)) {
-            $firstMessage = true; // Variable pour suivre le premier message
-            foreach ($liste_message as $message) {
-                echo "<div class='liste-message-post-n'><div class='liste-message-post-n-left'>";
+    <?php
+    if (!empty($liste_message)) {
+        $firstMessage = true; 
+        foreach ($liste_message as $message) {
+            echo "<div class='liste-message-post-n'><div class='liste-message-post-n-left'>";
 
-                $stmt = $conn->prepare("SELECT * FROM users WHERE idUser = :userId");
-                $stmt->bindParam(':userId', $message['authorMessage'], PDO::PARAM_INT);
-                $stmt->execute();
-                $author_info = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt = $conn->prepare("SELECT * FROM users WHERE idUser = :userId");
+            $stmt->bindParam(':userId', $message['authorMessage'], PDO::PARAM_INT);
+            $stmt->execute();
+            $author_info = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                echo "<a href='../index/profil.php?id=" . $author_info['idUser'] . "'><img class='liste-message-post-img' src='" . htmlspecialchars($author_info['pdp']) . "' alt='photo_profil'>";
-                echo "<p class='liste-message-post-pseudo'>@" . htmlspecialchars($author_info['pseudo']) . "</p></a>";
-                echo "<p class='liste-message-post-date'>Le : " . $message['dateMessage'] ."</p>";
-                echo "</div>";
+            echo "<a href='../index/profil.php?id=" . htmlspecialchars($author_info['idUser']) . "'><img class='liste-message-post-img' src='" . htmlspecialchars($author_info['pdp']) . "' alt='photo_profil'>";
+            echo "<p class='liste-message-post-pseudo'>@" . htmlspecialchars($author_info['pseudo']) . "</p></a>";
+            echo "<p class='liste-message-post-date'>Le : " . htmlspecialchars($message['dateMessage']) . "</p>";
+            echo "</div>";
 
-                echo "<div id='liste-message-post-n-right'>";
-                echo "<p>" . htmlspecialchars($message['textMessage']) . "</p>";
+            echo "<div id='liste-message-post-n-right'>";
+            echo "<p>" . htmlspecialchars($message['textMessage']) . "</p>";
 
-                // Vérifiez s'il y a une image associée au message
-                if (!empty($message['imagePath'])) {
-                    if ($firstMessage) {
-                        // Chemin d'accès à l'image depuis la table 'posts'
-                        echo "<img class='nulachier' src='../uploads/posts/" . htmlspecialchars($post_info['imagePath']) . "' alt='Message Image'>";
-                        $firstMessage = false; // Définir que le premier message a été traité
-                    } else {
-                        // Chemin d'accès à l'image depuis la table 'messages'
-                        echo "<img class='nulachier' src='../uploads/messages/" . htmlspecialchars($message['imagePath']) . "' alt='Message Image'>";
-                    }
+            if (!empty($message['imagePath'])) {
+                if ($firstMessage) {
+                    echo "<img class='nulachier' src='../uploads/posts/" . htmlspecialchars($post_info['imagePath']) . "' alt='Message Image'>";
+                } else {
+                    echo "<img class='nulachier' src='../uploads/messages/" . htmlspecialchars($message['imagePath']) . "' alt='Message Image'>";
                 }
-
-                echo "</div></div>";
             }
+            echo "</div>";
+            $firstMessage = false;
+
+            $stmt = $conn->prepare("SELECT idMessage FROM likes WHERE idUser = :userId");
+            $stmt->bindParam(':userId', $_SESSION['user_id'], PDO::PARAM_INT); 
+            $stmt->execute();
+            $likes = $stmt->fetchAll(PDO::FETCH_COLUMN, 0); 
+            ?>
+            <?php if (in_array($message["idMessage"], $likes)) : ?>
+                <form method="post" action="../php/unlike_message_process.php">
+                    <input type="hidden" name="message_id" value="<?php echo $message['idMessage']; ?>">
+                    <input type="hidden" name="post_id" value="<?php echo $post_id; ?>">
+                    <button type="submit" class="like-button">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                </form>
+            <?php else : ?>
+                <form method="post" action="../php/like_message_process.php">
+                    <input type="hidden" name="message_id" value="<?php echo $message['idMessage']; ?>">
+                    <input type="hidden" name="post_id" value="<?php echo $post_id; ?>"> 
+                    <button type="submit" class="like-button">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </form>
+            <?php endif; ?>
+            <?php
+            echo "</div>";
         }
-        ?>
-    </div>
+    }
+    ?>
+</div>
+
 
 
     <?php

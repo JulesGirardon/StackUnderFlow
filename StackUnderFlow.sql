@@ -44,10 +44,10 @@ CREATE TABLE POSTS (
 
 CREATE TABLE LIKES (
     idUser INT,
-    idPost INT,
-    CONSTRAINT Pk_likes PRIMARY KEY (idUser, idPost),
+    idMessage INT,
+    CONSTRAINT Pk_likes PRIMARY KEY (idUser, idMessage),
     CONSTRAINT Fk_likes_user FOREIGN KEY (idUser) REFERENCES USERS(idUser),
-    CONSTRAINT Fk_likes_post FOREIGN KEY (idPost) REFERENCES POSTS(idPost)
+    CONSTRAINT Fk_likes_message FOREIGN KEY (idMessage) REFERENCES MESSAGES(idMessage)
 );
 
 CREATE TABLE FOLLOWS (

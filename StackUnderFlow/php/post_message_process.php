@@ -44,7 +44,7 @@ if (isset($_POST['post_message']) && isset($_POST['post_id'])) {
         $stmt->bindParam(':message', $messageId);
         $stmt->execute();
 
-        echo "Message ajouté avec succès.";
+        header("Location: ../index/post.php?id=$postId");
     } catch (PDOException $e) {
         if ($e->getCode() == '45000') {
             echo "Erreur: Le message contient des mots interdits.";

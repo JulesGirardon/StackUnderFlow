@@ -64,7 +64,7 @@ if (isset($_POST['post_title'], $_POST['post_theme'], $_POST['post_message']) &&
         // Commit transaction
         $bdd->commit();
 
-        echo "Post créé avec succès.";
+        header("Location: ../index/post.php?id=$postId");
     } catch (PDOException $e) {
         // Rollback in case of error
         $bdd->rollBack();
