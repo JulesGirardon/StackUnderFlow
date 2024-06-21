@@ -19,13 +19,12 @@ if (isset($_POST['post_title'], $_POST['post_theme'], $_POST['post_message']) &&
     $author = $_SESSION['user_id'];
     $photoName = null;
 
-    // Check and create directories if not exist
     $uploadDir = '../uploads/posts/';
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true); // create directory with recursive flag
+        mkdir($uploadDir, 0777, true);
     }
 
-    // Handle file upload
+
     if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
         $photoName = basename($_FILES['post_image']['name']);
         $photoPath = $uploadDir . $photoName;
@@ -35,38 +34,35 @@ if (isset($_POST['post_title'], $_POST['post_theme'], $_POST['post_message']) &&
     }
 
     try {
-        // Start transaction
         $bdd->beginTransaction();
 
-        // Insert message into messages table
+
         $stmt = $bdd->prepare("INSERT INTO messages (textMessage, imagePath, authorMessage, dateMessage) VALUES (:message, :photo, :author, NOW())");
         $stmt->bindParam(':message', $message);
-        $stmt->bindParam(':photo', $photoName); // Store only the filename in the database
+        $stmt->bindParam(':photo', $photoName);
         $stmt->bindParam(':author', $author);
         $stmt->execute();
         $messageId = $bdd->lastInsertId();
 
-        // Insert post into posts table
+
         $stmt = $bdd->prepare("INSERT INTO posts (title, idTheme, author, imagePath) VALUES (:title, :idTheme, :author, :imagePath)");
         $stmt->bindParam(':title', $title);
         $stmt->bindParam(':idTheme', $idTheme);
         $stmt->bindParam(':author', $author);
-        $stmt->bindParam(':imagePath', $photoName); // Store only the filename in the database
+        $stmt->bindParam(':imagePath', $photoName);
         $stmt->execute();
         $postId = $bdd->lastInsertId();
 
-        // Insert relation into post_messages table
+
         $stmt = $bdd->prepare("INSERT INTO post_messages (idPost, idMessage) VALUES (:post, :message)");
         $stmt->bindParam(':post', $postId);
         $stmt->bindParam(':message', $messageId);
         $stmt->execute();
 
-        // Commit transaction
         $bdd->commit();
 
         header("Location: ../index/post.php?id=$postId");
     } catch (PDOException $e) {
-        // Rollback in case of error
         $bdd->rollBack();
 
         if ($e->getCode() == '45000') {

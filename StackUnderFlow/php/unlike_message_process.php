@@ -2,7 +2,7 @@
 session_start();
 
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_id']) isset($_SESSION['user_id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_id']) && isset($_SESSION['user_id'])) {
     $post_id = $_POST['post_id'];
     $message_id = $_POST['message_id'];
 

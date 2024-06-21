@@ -1,3 +1,6 @@
+
+
+
 <header>
     <div id="header-left">
         <a href="index.php"><img id="header-left-logo" src="icon.png" alt="logo_stack"></img></a>
@@ -27,4 +30,5 @@
         }
         ?>
     </div>
+    
 </header>

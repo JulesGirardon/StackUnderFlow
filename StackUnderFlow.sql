@@ -24,7 +24,7 @@ CREATE TABLE USERS (
     pseudo VARCHAR(32),
     mail VARCHAR(255),
     pwd VARCHAR(255),
-    pdp VARCHAR(255),
+    pdp VARCHAR(255) DEFAULT '/profilePicture/base/base.png',
     bio VARCHAR(255),
     statut VARCHAR(20),
     nbAbonnee INT,
