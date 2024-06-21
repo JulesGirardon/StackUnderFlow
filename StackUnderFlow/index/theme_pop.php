@@ -26,7 +26,7 @@ $popular_theme = $stmt->fetch(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/vnd.icon" href="icon.png">
-    <link rel="stylesheet" href="qsdfqsdf.css">
+    <link rel="stylesheet" href="styleTropBien.css">
     <title>StackUnderFlow</title>
 </head>
 <body>

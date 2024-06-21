@@ -66,7 +66,7 @@ if(isset($_GET['id'])) {
               content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Post</title>
-        <link rel="stylesheet" type="text/css" href="qsdfqsdf.css">
+        <link rel="stylesheet" type="text/css" href="styleTropBien.css">
         <script src="https://kit.fontawesome.com/5dfd5dfa22.js" crossorigin="anonymous"></script>
     </head>
 <body>
