@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS POST_MESSAGES;
-DROP TABLE IF EXISTS MESSAGES;
 DROP TABLE IF EXISTS FOLLOWS;
 DROP TABLE IF EXISTS LIKES;
+DROP TABLE IF EXISTS MESSAGES;
 DROP TABLE IF EXISTS POSTS;
 DROP TABLE IF EXISTS USERS;
 DROP TABLE IF EXISTS THEMES;
@@ -42,6 +42,18 @@ CREATE TABLE POSTS (
     CONSTRAINT Fk_posts_theme FOREIGN KEY (idTheme) REFERENCES THEMES(idTheme)
 );
 
+CREATE TABLE MESSAGES (
+    idMessage INT AUTO_INCREMENT,
+    textMessage VARCHAR(255),
+    imagePath VARCHAR(255) NULL,
+    SondageMessage BOOLEAN,
+    repostMessage BOOLEAN,
+    authorMessage INT,
+    dateMessage DATE,
+    CONSTRAINT Pk_messages PRIMARY KEY (idMessage),
+    CONSTRAINT Fk_messages_authorMessage FOREIGN KEY (authorMessage) REFERENCES USERS(idUser)
+);
+
 CREATE TABLE LIKES (
     idUser INT,
     idMessage INT,
@@ -56,18 +68,6 @@ CREATE TABLE FOLLOWS (
     CONSTRAINT Pk_follows PRIMARY KEY (idUser1, idUser2),
     CONSTRAINT Fk_follows_user1 FOREIGN KEY (idUser1) REFERENCES USERS(idUser),
     CONSTRAINT Fk_follows_user2 FOREIGN KEY (idUser2) REFERENCES USERS(idUser)
-);
-
-CREATE TABLE MESSAGES (
-    idMessage INT AUTO_INCREMENT,
-    textMessage VARCHAR(255),
-    imagePath VARCHAR(255) NULL,
-    SondageMessage BOOLEAN,
-    repostMessage BOOLEAN,
-    authorMessage INT,
-    dateMessage DATE,
-    CONSTRAINT Pk_messages PRIMARY KEY (idMessage),
-    CONSTRAINT Fk_messages_authorMessage FOREIGN KEY (authorMessage) REFERENCES USERS(idUser)
 );
 
 CREATE TABLE POST_MESSAGES (
